@@ -1,0 +1,44 @@
+from PIL import Image
+import os
+
+class JPEGCompressor:
+    def __init__(self):
+        # Инициализация атрибутов
+        self.image = None
+        self.quality = 100
+
+    def load(self, filepath):
+        # Проверка существования файла
+        if not os.path.exists(filepath):
+            raise FileNotFoundError(f"File {filepath} not found")
+        try:
+            # Попытка открыть изображение
+            img = Image.open(filepath)
+            if img.format != "JPEG":
+                raise TypeError(f"File {filepath} is not a JPEG image")
+            self.image = img
+        except (IOError, ValueError):
+            raise TypeError(f"File {filepath} is not a valid image")
+
+    def compress(self, quality):
+        # Проверка наличия загруженного изображения
+        if self.image is None:
+            raise FileNotFoundError("No image loaded to compress")
+        # Проверка диапазона качества
+        if not (0 <= quality <= 95):
+            raise ValueError("Quality must be between 0 and 95")
+        # Установка уровня качества
+        self.quality = quality
+
+    def save(self, filepath):
+        # Проверка наличия загруженного изображения
+        if self.image is None:
+            raise FileNotFoundError("No image loaded to save")
+        # Сохранение изображения с установленным уровнем качества
+        self.image.save(filepath, format="JPEG", quality=self.quality, optimize=True)
+
+# код ниже должен работать, если вы сделали всё верно
+compressor = JPEGCompressor()
+compressor.load("wallpapers.jpeg")
+compressor.compress(10)
+compressor.save("wallpapers_compressed.jpeg")
